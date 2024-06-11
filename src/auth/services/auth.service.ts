@@ -23,8 +23,8 @@ export class AuthService {
     return hashedPassword;
   }
 
-  async verifyToken(token: string): Promise<any> {
-    return jwt.verify(token, process.env.JWT_SECRET);
+  async verifyToken(token): Promise<any> {
+    return jwt.verify(token, '###secret');
   }
 
   async registerUser(
@@ -105,9 +105,10 @@ export class AuthService {
           data: null,
         };
       }
-
-      const payload = { userId: user._id, email: user.email };
-      const accessToken = this.jwtService.sign(payload);
+      const accessToken = this.jwtService.sign({
+        userId: user._id,
+        email: user.email,
+      });
 
       return {
         statusCode: HttpStatus.OK,
@@ -123,7 +124,7 @@ export class AuthService {
     }
   }
 
-  async findOneById(id: string): Promise<User | undefined> {
-    return this.userModel.findById(id).exec();
+  async validateUser(_id: string): Promise<User | undefined> {
+    return this.userModel.findOne({ _id }).select('id email username').exec();
   }
 }

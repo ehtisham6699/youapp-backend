@@ -1,4 +1,5 @@
 import {
+  IsArray,
   IsInt,
   IsNumber,
   IsOptional,
@@ -31,4 +32,12 @@ export class ProfileDto {
 
   @IsOptional()
   zodiac?: Date;
+
+  @IsOptional()
+  lastSeen?: Date;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  interests?: string[];
 }

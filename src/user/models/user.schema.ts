@@ -31,13 +31,12 @@ export class User {
     timestamp: Date;
   }[];
 
-
   phoneNumber: string;
 
   @Prop({ lastSeen: { type: Date, default: Date.now } })
   lastSeen: Date;
 
-  @Prop({ lastSeen: { type: Date} })
+  @Prop({ lastSeen: { type: Date } })
   birthDay: Date;
 
   @Prop({ type: Boolean, default: false })
@@ -57,7 +56,8 @@ export class User {
   @Prop()
   weight: number;
 
-
+  @Prop({ type: [String] })
+  interests?: string[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

@@ -15,7 +15,7 @@ import { MessageSchema } from 'src/chat/models/message.schema';
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({
       secret: '###secret',
-      signOptions: { expiresIn: '60s' },
+      // signOptions: { expiresIn: '60s' },
     }),
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
     MongooseModule.forFeature([{ name: 'Message', schema: MessageSchema }]),

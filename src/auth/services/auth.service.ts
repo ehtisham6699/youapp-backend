@@ -3,8 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User, UserDocument } from '../../user/models/user.schema';
 import { RegistrationDto } from '../dtos/auth.dto';
-import * as bcrypt from 'bcrypt';
-import * as crypto from 'crypto';
+import * as bcrypt from 'bcryptjs';
 import * as jwt from 'jsonwebtoken';
 import { JwtService } from '@nestjs/jwt';
 import { ApiResponse } from 'src/utils/response.utils';
@@ -13,7 +12,7 @@ import { LoginDto } from '../dtos/login.dto';
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectModel('User') private readonly userModel: Model<User>,
+    @InjectModel('User') private readonly userModel: Model<UserDocument>,
     private readonly jwtService: JwtService,
   ) {}
 
@@ -24,7 +23,7 @@ export class AuthService {
   }
 
   async verifyToken(token): Promise<any> {
-    return jwt.verify(token, '###secret');
+    return jwt.verify(token, process.env.JWT_SECRET);
   }
 
   async registerUser(
@@ -56,18 +55,16 @@ export class AuthService {
       const hashedPassword = await bcrypt.hash(password, 10);
 
       // Create a new user
-      const newUser = new this.userModel({
+      const newUser = await this.userModel.create({
         email,
         username,
         password: hashedPassword,
       });
 
-      // Save the user to the database
-      await newUser.save();
-
       // Generate JWT token
       const payload = { username: newUser.username, sub: newUser._id };
       const token = this.jwtService.sign(payload);
+      console.log(newUser);
 
       return {
         statusCode: HttpStatus.CREATED,
@@ -75,9 +72,10 @@ export class AuthService {
         data: newUser,
       };
     } catch (error) {
+      console.log('Error registering user:', error); // Log the error
       return {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-        message: error.message,
+        message: 'Error registering user',
         data: null,
       };
     }

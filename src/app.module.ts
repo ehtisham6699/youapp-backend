@@ -8,19 +8,22 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { JwtModule } from '@nestjs/jwt';
 import { CustomSocketIoAdapter } from './events/io-adapter';
 import { EventsModule } from './events/events.module';
+import { JWT_SECRET, MONGO_URI } from './config/config';
+import { SocketEventsModule } from './socket-events/socketEvent.module';
 
 @Module({
   imports: [
     AuthModule,
     UserModule,
     ChatModule,
+    SocketEventsModule,
     EventsModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({
-      secret: '###secret',
+      secret: JWT_SECRET,
       // signOptions: { expiresIn: '60s' },
     }),
-    MongooseModule.forRoot('mongodb://localhost:27017/youApp', {}),
+    MongooseModule.forRoot(MONGO_URI, {}),
     RouterModule.register([
       {
         path: 'api/v1',

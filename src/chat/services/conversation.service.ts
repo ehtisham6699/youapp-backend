@@ -134,6 +134,8 @@ export class ConversationService {
   async createGroupConversation(chatData, files) {
     const { participants, isGroupChat, groupName, admins, createdBy } =
       chatData;
+    console.log(chatData);
+
     const newParticipants = participants.map((id) => ({
       userId: new Types.ObjectId(id),
     }));

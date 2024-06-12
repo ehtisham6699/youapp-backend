@@ -1,11 +1,10 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import { Conversation } from 'src/chat/models/conversation.schema';
 import { Message } from 'src/chat/models/message.schema';
 import { User } from '../models/user.schema';
 import { ApiResponse } from 'src/utils/response.utils';
-import * as bcrypt from 'bcrypt';
 import { ProfileDto } from '../dtos/profile.dto';
 import * as sharp from 'sharp';
 
@@ -18,9 +17,13 @@ export class UserService {
     private readonly conversationModel: Model<Conversation>,
   ) {}
 
-  async updateProfile(data?: ProfileDto, files?): Promise<ApiResponse<User>> {
+  async updateProfile(
+    userId,
+    data?: ProfileDto,
+    files?,
+  ): Promise<ApiResponse<User>> {
     try {
-      if (!data._id) {
+      if (!userId) {
         return {
           statusCode: HttpStatus.NOT_FOUND,
           message: 'Missing User Id',
@@ -28,7 +31,10 @@ export class UserService {
         };
       }
 
-      const user = await this.userModel.findById(data._id).select('-password');
+      const user = await this.userModel
+        .findById(userId.toString())
+        .select('-password');
+
       if (!user) {
         return {
           statusCode: HttpStatus.NOT_FOUND,
@@ -51,9 +57,9 @@ export class UserService {
 
         // await moveFilesToS3(profileImagePath, files);
       }
-
       // Update user fields
       Object.assign(user, data);
+
       await user.save();
 
       return {
@@ -73,8 +79,6 @@ export class UserService {
   }
 
   async getProfile(userId: string): Promise<ApiResponse<User>> {
-    console.log(userId);
-
     const user = await this.userModel.findById(userId).select('-password');
     if (!user) {
       if (!user) {
@@ -92,7 +96,7 @@ export class UserService {
     };
   }
 
-  async UpdateUser(data: ProfileDto) {
+  async UpdateUser(data) {
     let existingUser;
     let updatedUser = await this.userModel
       .findByIdAndUpdate(data._id, { $set: data }, { new: true })
@@ -113,5 +117,58 @@ export class UserService {
     return sender.blockedUsers.some(
       (user) => user._id.toString() === recipientId && user.isBlocked,
     );
+  }
+
+  async blockOrUnblockUser(currentUser, userId, block) {
+    try {
+      // Find the current user
+      const user = await this.userModel
+        .findById(new mongoose.Types.ObjectId(currentUser))
+        .exec();
+
+      if (!user) {
+        return {
+          statusCode: HttpStatus.NOT_FOUND,
+          message: 'User not Found',
+          data: { user },
+        };
+      }
+
+      // Check if the user is already blocked
+      const blockedUserIndex = user.blockedUsers.findIndex(
+        (blockedUser) => blockedUser._id.toString() === userId,
+      );
+      if (blockedUserIndex === -1 && block === true) {
+        // If blocking, add the user to the blockedUsers array
+        user.blockedUsers.push({
+          _id: new mongoose.Types.ObjectId(userId),
+          isBlocked: true,
+          timestamp: new Date(),
+        });
+      } else {
+        // If unblocking, set the isBlocked field to false
+        if (blockedUserIndex !== -1) {
+          user.blockedUsers[blockedUserIndex].isBlocked = block === true;
+          user.blockedUsers[blockedUserIndex].timestamp = new Date();
+        }
+      }
+      // Save the updated user
+      await user.save();
+
+      return {
+        statusCode: HttpStatus.ACCEPTED,
+        message:
+          block === true
+            ? 'User blocked successfully'
+            : 'User unblocked successfully',
+        data: { user },
+      };
+    } catch (error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error.message,
+        data: null,
+      };
+    }
   }
 }

@@ -9,12 +9,13 @@ import { UserService } from '../user/services/user.service';
 import { jwtStrategy } from '../shared/strategies/jwt.strategy';
 import { ConversationSchema } from 'src/chat/models/conversation.schema';
 import { MessageSchema } from 'src/chat/models/message.schema';
+import { JWT_SECRET } from 'src/config/config';
 
 @Module({
   imports: [
-    PassportModule.register({ defaultStrategy: 'jwt' }),
+    // PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({
-      secret: '###secret',
+      secret: JWT_SECRET,
       // signOptions: { expiresIn: '60s' },
     }),
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),

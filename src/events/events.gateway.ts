@@ -14,6 +14,7 @@ import { ConversationService } from 'src/chat/services/conversation.service';
 import { Types } from 'mongoose';
 import { UserService } from 'src/user/services/user.service';
 import { CreateMessageDto } from './event_message.dto';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 @WebSocketGateway()
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
@@ -78,7 +79,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     } catch (e) {
       console.log(e);
 
-      client.emit('AuthError', { message: 'Authentication failed' });
+      client.emit('authError', { message: 'Authentication failed' });
       client.disconnect();
     }
   }
@@ -104,6 +105,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage('send_message')
+  @ApiResponse({ status: 200, description: 'Received message successfully' })
   async createChat(client: Socket, data: any) {
     try {
       const userId = client.data.userId.toString();
@@ -188,6 +190,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
             conversationId.toString(),
             recipientId.userId.toString(),
           );
+        console.log(unseenCount);
 
         client.broadcast
           .to(recipientId.userId.toString())
@@ -244,6 +247,20 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         message: err.message,
         data: null,
       };
+    }
+  }
+
+  @SubscribeMessage('conversation_opened')
+  async markConversationRead(client: Socket, data: any) {
+    const userId = client.data.userId.toString();
+    const conversationId = data.conversationId;
+    const conversationClicked = data.conversationClicked;
+    let updatedMessages = await this.messageService.updateManyMessagesSeenBy(
+      userId,
+      conversationId,
+    );
+    if (conversationClicked) {
+      client.to(conversationId).emit('checkmark', updatedMessages);
     }
   }
 }

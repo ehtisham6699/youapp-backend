@@ -18,9 +18,9 @@ import { ConversationSchema } from 'src/chat/models/conversation.schema';
 
 @Module({
   imports: [
-    PassportModule.register({ defaultStrategy: 'jwt' }),
+    // PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({
-      secret: '###secret',
+      secret: process.env.JWT_SECRET,
       // signOptions: { expiresIn: '60s' },
     }),
     MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]),

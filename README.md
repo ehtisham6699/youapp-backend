@@ -1,73 +1,111 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# YouApp Backend
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+This project is a backend implementation for a messaging application called YouApp. It provides various functionalities such as user registration, login, profile management, private and group conversations, and real-time messaging via Socket.io.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Table of Contents
+- [Features](#features)
+- [Technologies](#technologies)
+- [Getting Started](#getting-started)
+- [Configuration](#configuration)
+- [Running the Application](#running-the-application)
+- [Docker Setup](#docker-setup)
+- [API Endpoints](#api-endpoints)
+- [Socket.io Events](#socketio-events)
+- [License](#license)
 
-## Description
+## Features
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- **User Management**
+  - User Registration
+  - User Login
+  - Profile Update
+  - View Profile
 
-## Installation
+- **Conversations**
+  - Create Private Conversations
+  - Create Group Conversations
+  - View All Messages of a Conversation
+  - Send Message via Socket.io
+  - Seen/Unseen Message Status
+  - Unseen Message Count
 
-```bash
-$ npm install
+## Technologies
+
+- **NestJS**: Framework for building efficient, reliable, and scalable server-side applications.
+- **Mongoose**: MongoDB object modeling tool.
+- **Socket.io**: Real-time, bidirectional and event-based communication.
+- **JWT**: JSON Web Tokens for authentication.
+- **Docker**: Containerization platform.
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js (v18 or higher)
+- Docker (for containerized setup)
+- MongoDB (local instance or Dockerized)
+
+### Installation
+
+1. Clone the repository:
+   ```
+   git clone https://github.com/ehtisham6699/youapp-backend.git
+   cd youapp-backend
+   ```
+2. Install dependencies:
+   ```
+npm install
+
+## Configuration
+- Create a .env file in the root directory and add your configuration variables:
 ```
-
-## Running the app
-
-```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+PORT=4000
+MONGODB_URI=mongodb://your_mongodb_uri
+JWT_SECRET=your_jwt_secret
 ```
+## Running the Application
 
-## Test
+There are two ways to run the application: locally and using Docker.
 
-```bash
-# unit tests
-$ npm run test
+### Locally
 
-# e2e tests
-$ npm run test:e2e
+**Prerequisites:**
 
-# test coverage
-$ npm run test:cov
+* Ensure you have MongoDB running on your system.
+
+**Start the Application:**
+
+1. Open a terminal window.
+2. Navigate to the root directory of your project.
+3. Run the following command:
+
+   ```
+   npm start
+
+### Docker Setup
+#### Build the Docker image:
+
 ```
+docker build -t youapp-backend .
+```
+#### Run the Docker container:
 
-## Support
+```
+docker run -p 4000:4000 --name youapp-backend-container youapp-backend
+```
+To connect to a MongoDB container, you can use Docker Compose or link containers using Docker network.
+***OR*** 
+Create a docker-compose.yml file
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+### API Endpoints
+**Swagger documentation is provided for testing**
 
-## Stay in touch
+## Socket.io Events
+**Swagger documentation is provided for testing**
+```
+localhost:4000/api
+```
+### License
+This project is licensed under the MIT License. See the LICENSE file for details.
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
 
-## License
-
-Nest is [MIT licensed](LICENSE).
